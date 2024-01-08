@@ -10,6 +10,7 @@ import DiscordProvider from "next-auth/providers/discord";
 
 import { env } from "@/env";
 import { db } from "@/server/db";
+import { compare } from "bcryptjs";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -18,25 +19,12 @@ import { db } from "@/server/db";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-  interface User {
-    id: number;
-    email: string;
-    name: string;
-    role?: string;
-    accessToken?: string;
-    refreshToken?: string;
-    accessTokenExpires?: number;
-  }
   interface Session extends DefaultSession {
     user: {
       id: string;
-
-      expires: string;
-      error: string;
       // ...other properties
       // role: UserRole;
-    } & DefaultSession["user"] &
-      User;
+    } & DefaultSession["user"];
   }
 
   // interface User {
@@ -52,44 +40,83 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   pages: {
-    signIn: "/sign-in",
-    signOut: "/sign-out",
-    error: "/error",
+    signIn: "/auth/sign-in",
+  },
+  session: {
+    strategy: "jwt",
   },
   callbacks: {
-    session: ({ session, user, token }) => {
+    session: ({ session, token }) => {
       return {
         ...session,
         user: {
           ...session.user,
-          id: user.id,
+          id: token.id,
         },
       };
+    },
+    jwt: ({ token, user }) => {
+      if (user) {
+        const newUser = user as unknown as User;
+        return {
+          ...token,
+          id: newUser.id,
+        };
+      }
+      return token;
     },
   },
   adapter: PrismaAdapter(db),
   providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: {
+          label: "Email",
+          type: "text ",
+          placeholder: "Enter your email",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Enter your password",
+        },
+      },
+      authorize: async (credentials, rseq) => {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const existingUserByEmail = await db.user.findUnique({
+          where: {
+            email: credentials?.email,
+          },
+        });
+
+        if (!existingUserByEmail) {
+          return null;
+        }
+
+        const passWordMatch = await compare(
+          credentials.password,
+          existingUserByEmail.password,
+        );
+
+        if (!passWordMatch) {
+          return null;
+        }
+
+        return {
+          id: existingUserByEmail.id,
+          name: existingUserByEmail.name,
+          email: existingUserByEmail.email,
+        };
+      },
+    }),
+
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
-    CredentialsProvider({
-      id: "domain-login",
-      name: "Domain Account",
-      authorize: async (credentials, req) => {
-        const user = await db.user.findFirst();
-        return user as unknown as User;
-      },
-      credentials: {
-        domain: {
-          label: "Domain",
-          type: "text ",
-          placeholder: "CORPNET",
-          value: "CORPNET",
-        },
-        username: { label: "Username", type: "text ", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" },
-      },
     }),
 
     /**

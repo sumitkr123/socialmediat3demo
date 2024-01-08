@@ -1,13 +1,13 @@
 import "@/styles/globals.css";
 
 import { Inter } from "next/font/google";
-import { cookies } from "next/headers";
 
 import BottomBar from "@/components/shared/BottomBar";
 import { LeftSideBar } from "@/components/shared/LeftSideBar";
-import NextAuthProvider from "@/provider/SessionProvider";
-import { ThemeProvider } from "@/provider/ThemeProvider";
-import { TRPCReactProvider } from "@/trpc/client";
+import { Toaster } from "@/components/ui/sonner";
+import Providers from "@/provider/Providers";
+import SignedIn from "@/provider/SignedIn";
+import SignedOut from "@/provider/SignedOut";
 
 const inter = Inter({ subsets: ["cyrillic"] });
 
@@ -26,22 +26,19 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <main className="flex flex-row">
-          <NextAuthProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <TRPCReactProvider cookies={cookies().toString()}>
-                <LeftSideBar />
-                <section className="main-container">
-                  <div className="w-full max-w-4xl">{children}</div>
-                </section>
-                <BottomBar />
-              </TRPCReactProvider>
-            </ThemeProvider>
-          </NextAuthProvider>
+          <Providers>
+            <SignedIn>
+              <LeftSideBar />
+              <section className="main-container">
+                <div className="w-full max-w-4xl">{children}</div>
+              </section>
+              <BottomBar />
+            </SignedIn>
+            <SignedOut>
+              <section className="main-container">{children}</section>
+            </SignedOut>
+          </Providers>
+          <Toaster />
         </main>
       </body>
     </html>
