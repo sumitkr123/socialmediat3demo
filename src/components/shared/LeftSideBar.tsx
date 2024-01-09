@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { NavLink } from "../features/NavLink";
 
-export const LeftSideBar = () => {
+const LeftSideBar = () => {
   const { data: session, status } = useSession();
   const user = session?.user;
 
@@ -73,3 +73,5 @@ export const LeftSideBar = () => {
     </nav>
   );
 };
+
+export default LeftSideBar;

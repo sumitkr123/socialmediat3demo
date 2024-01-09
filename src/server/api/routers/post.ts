@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { throwPrismaErrors } from "@/lib/helper";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -16,17 +17,26 @@ export const postRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
+    .input(z.object({ content: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
+      console.log("🚀 ~ .mutation ~ ctx:", ctx);
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      return ctx.db.post.create({
-        data: {
-          name: input.name,
-          createdBy: { connect: { id: ctx.session.user.id } },
-        },
-      });
+      try {
+        const result = await ctx.db.post.create({
+          data: {
+            content: input.content,
+            createdBy: { connect: { id: ctx.session.user.id } },
+          },
+        });
+
+        return result;
+      } catch (e) {
+        throwPrismaErrors(e, input);
+
+        throw e;
+      }
     }),
 
   getLatest: protectedProcedure.query(({ ctx }) => {
@@ -41,7 +51,7 @@ export const postRouter = createTRPCRouter({
     .query<
       Array<{
         id: number;
-        name: string;
+        content: string;
         createdAt: Date;
         updatedAt: Date;
         createdById: string;

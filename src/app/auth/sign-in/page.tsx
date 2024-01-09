@@ -1,7 +1,9 @@
-import { SignIn } from "@/components/forms/sign-in";
 import { getServerAuthSession } from "@/server/auth";
 import { getProviders } from "next-auth/react";
+import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
+
+const SignIn = dynamic(() => import("@/components/forms/sign-in"));
 
 const LoginPage = async () => {
   const session = await getServerAuthSession();

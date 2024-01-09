@@ -82,7 +82,7 @@ export const authOptions: NextAuthOptions = {
           placeholder: "Enter your password",
         },
       },
-      authorize: async (credentials, rseq) => {
+      authorize: async (credentials, req) => {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -99,7 +99,7 @@ export const authOptions: NextAuthOptions = {
 
         const passWordMatch = await compare(
           credentials.password,
-          existingUserByEmail.password,
+          existingUserByEmail.password!,
         );
 
         if (!passWordMatch) {
@@ -113,7 +113,6 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
-
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,

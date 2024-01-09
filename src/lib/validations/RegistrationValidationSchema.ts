@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { mailRegex, nameRegex, passwordRegex, userNameRegex } from "../utils";
+import { mailRegex, nameRegex, passwordRegex } from "../utils";
 
 export const RegistrationValidationSchema = z
   .object({
@@ -8,11 +8,6 @@ export const RegistrationValidationSchema = z
       .min(1, "**Name is required.")
       .max(30, "**Name is too long.")
       .regex(nameRegex, "**Please enter a valid name"),
-    username: z
-      .string()
-      .min(1, "**Username is required.")
-      .max(30, "**Username is too long.")
-      .regex(userNameRegex, "**Please enter a valid username"),
     email: z
       .string()
       .min(1, "**Email is required.")

@@ -20,9 +20,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { LiteralUnion, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
-export const SignUp = ({
+const SignUp = ({
   providers,
 }: {
   providers: Record<
@@ -34,14 +35,26 @@ export const SignUp = ({
     resolver: zodResolver(RegistrationValidationSchema),
     defaultValues: {
       name: "",
-      username: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  const mutation = api.user.create.useMutation();
+  const mutation = api.user.create.useMutation({
+    onSuccess: (data, _variables, _context) => {
+      if (data) {
+        toast("User successfully created..!", {
+          position: "top-right",
+          duration: 1500,
+        });
+        router.replace("/auth/sign-in");
+      }
+    },
+    onError: (error) => {
+      toast(error.message, { position: "top-right", duration: 1500 });
+    },
+  });
 
   const router = useRouter();
 
@@ -56,8 +69,181 @@ export const SignUp = ({
     mutation.mutate({
       ...rest,
     });
+  };
 
-    router.replace("/auth/sign-in");
+  const handleSocialLogin = async (
+    authkey: LiteralUnion<BuiltInProviderType, string>,
+  ) => {
+    const signInData = await signIn(authkey, {
+      callbackUrl: "/",
+      redirect: true,
+    });
+
+    if (signInData?.error !== null && signInData?.error) {
+      toast(signInData?.error, { position: "top-right", duration: 1500 });
+    }
+  };
+
+  const _renderFormByProviders = () => {
+    if (providers !== null && providers) {
+      return Object.keys(providers).map(
+        (authkey: LiteralUnion<BuiltInProviderType, string>, index) => {
+          switch (authkey) {
+            case "credentials":
+              return (
+                <div key={authkey}>
+                  <Form {...form}>
+                    <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="mt-10 flex flex-col justify-start gap-6"
+                    >
+                      <FormField
+                        required
+                        name="name"
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem className="flex w-full flex-col">
+                              <FormLabel className="text-base-semibold text-dark-1">
+                                Name
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  placeholder="Enter your name"
+                                  className="input-focus"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+
+                      <FormField
+                        required
+                        name="email"
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem className="flex w-full flex-col">
+                              <FormLabel className="text-base-semibold text-dark-1">
+                                Email
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="email"
+                                  placeholder="Enter your email"
+                                  className="input-focus"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+
+                      <FormField
+                        required
+                        name="password"
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem className="flex w-full flex-col">
+                              <FormLabel className="text-base-semibold text-dark-1">
+                                Password
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="password"
+                                  placeholder="Enter your password"
+                                  className="input-focus"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+
+                      <FormField
+                        required
+                        name="confirmPassword"
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem className="flex w-full flex-col">
+                              <FormLabel className="text-base-semibold text-dark-1">
+                                Confirm password
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="password"
+                                  placeholder="Confirm your password"
+                                  className="input-focus"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+
+                      <Button
+                        disabled={mutation.isLoading}
+                        type="submit"
+                        className="bg-primary text-white"
+                      >
+                        Submit
+                      </Button>
+
+                      <Link
+                        href={"/auth/sign-in"}
+                        replace
+                        className="text-md flex w-fit gap-2 text-slate-700 max-md:text-sm"
+                      >
+                        Already have an account?&nbsp;
+                        <p className="text-md text-primary">Sign in</p>
+                      </Link>
+                    </form>
+
+                    <div className="my-4 flex flex-row items-center gap-2">
+                      <div className="flex h-[0.5px] w-full bg-dark-1" />
+                      <p className="text-md text-slate-700">OR</p>
+                      <div className="flex h-[0.5px] w-full bg-dark-1" />
+                    </div>
+                  </Form>
+                </div>
+              );
+
+            case "discord":
+              return (
+                <Button
+                  key={authkey}
+                  disabled={mutation.isLoading}
+                  className="flex gap-5 bg-dark-1 text-light-1 hover:bg-gray-800"
+                  onClick={() => handleSocialLogin("discord")}
+                >
+                  <Image
+                    alt="Discord Logo"
+                    src={"/assets/discord.png"}
+                    width={20}
+                    height={20}
+                  />
+                  Sign in with Discord
+                </Button>
+              );
+
+            default:
+              return <></>;
+          }
+        },
+      );
+    }
   };
 
   return (
@@ -69,169 +255,9 @@ export const SignUp = ({
         </p>
       </div>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="mt-10 flex flex-col justify-start gap-6"
-        >
-          <FormField
-            required
-            name="name"
-            control={form.control}
-            render={({ field }) => {
-              return (
-                <FormItem className="flex w-full flex-col">
-                  <FormLabel className="text-base-semibold text-dark-1">
-                    Name
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Enter your name"
-                      className="input-focus"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-
-          <FormField
-            required
-            name="username"
-            control={form.control}
-            render={({ field }) => {
-              return (
-                <FormItem className="flex w-full flex-col">
-                  <FormLabel className="text-base-semibold text-dark-1">
-                    Username
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Enter your username"
-                      className="input-focus"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-
-          <FormField
-            required
-            name="email"
-            control={form.control}
-            render={({ field }) => {
-              return (
-                <FormItem className="flex w-full flex-col">
-                  <FormLabel className="text-base-semibold text-dark-1">
-                    Email
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      className="input-focus"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-
-          <FormField
-            required
-            name="password"
-            control={form.control}
-            render={({ field }) => {
-              return (
-                <FormItem className="flex w-full flex-col">
-                  <FormLabel className="text-base-semibold text-dark-1">
-                    Password
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Enter your password"
-                      className="input-focus"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-
-          <FormField
-            required
-            name="confirmPassword"
-            control={form.control}
-            render={({ field }) => {
-              return (
-                <FormItem className="flex w-full flex-col">
-                  <FormLabel className="text-base-semibold text-dark-1">
-                    Confirm password
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Confirm your password"
-                      className="input-focus"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-
-          <Button type="submit" className="bg-primary text-white">
-            Submit
-          </Button>
-
-          <Link
-            href={"/auth/sign-in"}
-            replace
-            className="text-md flex w-fit gap-2 text-slate-700 max-md:text-sm"
-          >
-            Already have an account?&nbsp;
-            <p className="text-primary text-md">Sign in</p>
-          </Link>
-        </form>
-        <div className="my-4 flex flex-row items-center gap-2">
-          <div className="flex h-[0.5px] w-full bg-dark-1" />
-          <p className="text-md text-slate-700">OR</p>
-          <div className="flex h-[0.5px] w-full bg-dark-1" />
-        </div>
-
-        <Button
-          disabled={mutation.isLoading}
-          className="flex gap-5 bg-dark-1 text-light-1 hover:bg-gray-800"
-          onClick={() => {
-            signIn("discord", {
-              callbackUrl: "/",
-              redirect: true,
-            });
-          }}
-        >
-          <Image
-            alt="Discord Logo"
-            src={"/assets/discord.png"}
-            width={20}
-            height={20}
-          />
-          Sign in with Discord
-        </Button>
-      </Form>
+      {_renderFormByProviders()}
     </div>
   );
 };
+
+export default SignUp;

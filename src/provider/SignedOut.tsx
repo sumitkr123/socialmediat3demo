@@ -1,14 +1,17 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { Loader } from "@/components/shared/Loader";
+import { useAuthStatus } from "@/hooks/useAuthStatus";
 import { ReactNode } from "react";
 
 export default function SignedOut({ children }: { children: ReactNode }) {
-  const { data: session, status } = useSession();
+  const { authenticated, isLoading } = useAuthStatus();
 
-  if (session === null || !session || status !== "authenticated") {
-    return children;
-  } else {
+  if (isLoading) {
+    return <Loader />;
+  } else if (authenticated) {
     return null;
+  } else {
+    return children;
   }
 }

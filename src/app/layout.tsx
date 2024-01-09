@@ -2,12 +2,8 @@ import "@/styles/globals.css";
 
 import { Inter } from "next/font/google";
 
-import BottomBar from "@/components/shared/BottomBar";
-import { LeftSideBar } from "@/components/shared/LeftSideBar";
-import { Toaster } from "@/components/ui/sonner";
 import Providers from "@/provider/Providers";
-import SignedIn from "@/provider/SignedIn";
-import SignedOut from "@/provider/SignedOut";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["cyrillic"] });
 
@@ -17,6 +13,12 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const SignedIn = dynamic(() => import("@/provider/SignedIn"));
+const SignedOut = dynamic(() => import("@/provider/SignedOut"));
+const LeftSideBar = dynamic(() => import("@/components/shared/LeftSideBar"));
+const BottomBar = dynamic(() => import("@/components/shared/BottomBar"));
+const Toaster = dynamic(() => import("@/components/ui/sonner"));
+
 export default function RootLayout({
   children,
 }: {
@@ -25,8 +27,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="flex flex-row">
-          <Providers>
+        <Providers>
+          <main className="flex flex-row">
             <SignedIn>
               <LeftSideBar />
               <section className="main-container">
@@ -37,9 +39,9 @@ export default function RootLayout({
             <SignedOut>
               <section className="main-container">{children}</section>
             </SignedOut>
-          </Providers>
-          <Toaster />
-        </main>
+            <Toaster />
+          </main>
+        </Providers>
       </body>
     </html>
   );

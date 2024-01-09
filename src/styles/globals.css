@@ -83,7 +83,7 @@
 
   /* Head Text */
   .head-text {
-    @apply text-heading2-bold text-light-1;
+    @apply text-2xl text-light-1;
   }
 
   /* Activity */
@@ -144,7 +144,7 @@
   }
 
   .bottombar_link {
-    @apply relative flex flex-col items-center gap-2 rounded-lg p-2 sm:flex-1 sm:px-2 sm:py-2.5;
+    @apply relative flex flex-col items-center gap-2 rounded-lg p-2 xs:flex-1 xs:px-2 xs:py-2.5;
   }
 
   .leftsidebar {
