@@ -1,3 +1,4 @@
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { TRPCReactProvider } from "@/trpc/client";
 import { cookies } from "next/headers";
 import { ReactNode } from "react";
@@ -16,7 +17,7 @@ export default function Providers({ children }: { children: ReactNode }) {
       <NextAuthProvider>
         <CustomAuthProvider>
           <TRPCReactProvider cookies={cookies().toString()}>
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
           </TRPCReactProvider>
         </CustomAuthProvider>
       </NextAuthProvider>

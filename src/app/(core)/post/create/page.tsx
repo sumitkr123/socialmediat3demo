@@ -1,12 +1,14 @@
-import PostForm from "@/components/forms/post";
+import dynamic from "next/dynamic";
 
-const CreateThread = async (_props: any) => {
+const PostForm = dynamic(() => import("@/components/forms/post"));
+
+const CreatePost = async (_props: any) => {
   return (
     <>
-      <h1 className="head-text">Create Thread</h1>
+      <h1 className="head-text">Create Post</h1>
       <PostForm />
     </>
   );
 };
 
-export default CreateThread;
+export default CreatePost;

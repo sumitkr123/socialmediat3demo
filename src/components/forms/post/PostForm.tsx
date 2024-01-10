@@ -28,13 +28,13 @@ const PostForm = () => {
     },
   });
 
-  const mutation = api.post.create.useMutation({
-    onSuccess: (data, variables, context) => {
+  const postForm = api.post.create.useMutation({
+    onSuccess: (data) => {
       if (data) {
         router.push("/");
       }
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       toast(error.message, { position: "top-right", duration: 1500 });
     },
   });
@@ -42,7 +42,7 @@ const PostForm = () => {
   const onSubmit = async (values: z.infer<typeof PostValidationSchema>) => {
     // Do something with the form values.
 
-    mutation.mutate({
+    postForm.mutate({
       ...values,
     });
   };
@@ -75,7 +75,7 @@ const PostForm = () => {
         />
 
         <Button
-          disabled={mutation.isLoading}
+          disabled={postForm.isLoading}
           type="submit"
           className="bg-primary text-light-1 hover:bg-primary-500"
         >

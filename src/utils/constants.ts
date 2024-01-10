@@ -1,4 +1,11 @@
-export const sidebarLinks = [
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import { UrlObject } from "url";
+
+export const sidebarLinks: Array<{
+  imgURL: string | StaticImport;
+  route: UrlObject | __next_route_internal_types__.RouteImpl<"/">;
+  label: string;
+}> = [
   {
     imgURL: "/assets/home.svg",
     route: "/",
@@ -9,21 +16,11 @@ export const sidebarLinks = [
     route: "/search",
     label: "Search",
   },
-  // {
-  //   imgURL: "/assets/heart.svg",
-  //   route: "/activity",
-  //   label: "Activity",
-  // },
   {
     imgURL: "/assets/create.svg",
     route: "/post/create",
     label: "Post",
   },
-  // {
-  //   imgURL: "/assets/community.svg",
-  //   route: "/communities",
-  //   label: "Communities",
-  // },
   {
     imgURL: "/assets/user.svg",
     route: "/profile",

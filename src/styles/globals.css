@@ -93,7 +93,7 @@
 
   /* No Result */
   .no-result {
-    @apply !text-base-regular text-center text-light-3;
+    @apply text-center text-light-3;
   }
 
   /* Community Card */

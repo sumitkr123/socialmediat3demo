@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 
-const Search: NextPage = () => {
+const Search: NextPage = async () => {
   return <h1 className={"text-2xl text-light-1"}>Search</h1>;
 };
 

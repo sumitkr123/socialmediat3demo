@@ -41,7 +41,7 @@ const SignUp = ({
     },
   });
 
-  const mutation = api.user.create.useMutation({
+  const signUpMutation = api.user.create.useMutation({
     onSuccess: (data, _variables, _context) => {
       if (data) {
         toast("User successfully created..!", {
@@ -66,7 +66,7 @@ const SignUp = ({
 
     const { confirmPassword, ...rest } = values;
 
-    mutation.mutate({
+    signUpMutation.mutate({
       ...rest,
     });
   };
@@ -194,7 +194,7 @@ const SignUp = ({
                       />
 
                       <Button
-                        disabled={mutation.isLoading}
+                        disabled={signUpMutation.isLoading}
                         type="submit"
                         className="bg-primary text-white"
                       >
@@ -224,7 +224,7 @@ const SignUp = ({
               return (
                 <Button
                   key={authkey}
-                  disabled={mutation.isLoading}
+                  disabled={signUpMutation.isLoading}
                   className="flex gap-5 bg-dark-1 text-light-1 hover:bg-gray-800"
                   onClick={() => handleSocialLogin("discord")}
                 >

@@ -39,6 +39,19 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  logger: {
+    debug(code, metadata) {
+      console.log("🚀 ~ Auth debug ~ metadata:", metadata);
+      console.log("🚀 ~ Auth debug ~ code:", code);
+    },
+    error(code, metadata) {
+      console.log("🚀 ~ Auth error ~ metadata:", metadata);
+      console.log("🚀 ~ Auth error ~ code:", code);
+    },
+    warn(code) {
+      console.log("🚀 ~ Auth warn ~ code:", code);
+    },
+  },
   pages: {
     signIn: "/auth/sign-in",
   },

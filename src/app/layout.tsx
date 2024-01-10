@@ -1,9 +1,7 @@
 import "@/styles/globals.css";
 
-import { Inter } from "next/font/google";
-
-import Providers from "@/provider/Providers";
 import dynamic from "next/dynamic";
+import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["cyrillic"] });
 
@@ -13,6 +11,7 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const Providers = dynamic(() => import("@/provider/Providers"));
 const SignedIn = dynamic(() => import("@/provider/SignedIn"));
 const SignedOut = dynamic(() => import("@/provider/SignedOut"));
 const LeftSideBar = dynamic(() => import("@/components/shared/LeftSideBar"));
@@ -31,7 +30,7 @@ export default function RootLayout({
           <main className="flex flex-row">
             <SignedIn>
               <LeftSideBar />
-              <section className="main-container">
+              <section className="main-container max-md:p-0">
                 <div className="w-full max-w-4xl">{children}</div>
               </section>
               <BottomBar />

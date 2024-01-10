@@ -1,25 +1,12 @@
 import { z } from "zod";
 
 import { throwPrismaErrors } from "@/lib/helper";
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-
   create: protectedProcedure
-    .input(z.object({ content: z.string().min(1) }))
+    .input(z.object({ content: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      console.log("🚀 ~ .mutation ~ ctx:", ctx);
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -39,43 +26,98 @@ export const postRouter = createTRPCRouter({
       }
     }),
 
-  getLatest: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
-    });
-  }),
-
   getAllPosts: protectedProcedure
-    .input(z.object({ author: z.boolean() }))
-    .query<
-      Array<{
-        id: number;
-        content: string;
-        createdAt: Date;
-        updatedAt: Date;
-        createdById: string;
-        createdBy?: {
-          id: string;
-          name: string | null;
-          email: string | null;
-          emailVerified: Date | null;
-          image: string | null;
-        };
-      }>
-    >(({ ctx, input }) => {
-      if (input.author === true) {
-        return ctx.db.post.findMany({
-          include: {
-            createdBy: true,
+    .input(
+      z.object({
+        includeAuthor: z.boolean(),
+        includecomments: z.boolean(),
+        includeLikes: z.boolean(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.db.post.findMany({
+        include: {
+          createdBy: input.includeAuthor === true,
+          comments: input.includecomments === true,
+          likes:
+            input.includeLikes === true
+              ? {
+                  select: {
+                    userId: true,
+                  },
+                }
+              : false,
+        },
+      });
+    }),
+
+  addLikeToPost: protectedProcedure
+    .input(z.object({ postId: z.number(), userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // simulate a slow db call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      try {
+        const result = await ctx.db.post.update({
+          data: {
+            likes: {
+              upsert: {
+                update: {
+                  user: { connect: { id: input.userId } },
+                },
+                create: {
+                  user: { connect: { id: input.userId } },
+                },
+                where: {
+                  userId_postId: {
+                    postId: input.postId,
+                    userId: input.userId,
+                  },
+                },
+              },
+            },
+          },
+          where: {
+            id: input.postId,
           },
         });
-      } else {
-        return ctx.db.post.findMany();
+
+        return result;
+      } catch (e) {
+        throwPrismaErrors(e, input);
+
+        throw e;
       }
     }),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
+  removeLikeFromPost: protectedProcedure
+    .input(z.object({ postId: z.number(), userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // simulate a slow db call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      try {
+        const result = await ctx.db.post.update({
+          data: {
+            likes: {
+              delete: {
+                userId_postId: {
+                  postId: input.postId,
+                  userId: input.userId,
+                },
+              },
+            },
+          },
+          where: {
+            id: input.postId,
+          },
+        });
+
+        return result;
+      } catch (e) {
+        throwPrismaErrors(e, input);
+
+        throw e;
+      }
+    }),
 });
