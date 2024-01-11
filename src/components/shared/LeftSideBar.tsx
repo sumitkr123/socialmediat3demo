@@ -12,7 +12,7 @@ const LeftSideBar = () => {
   const user = session?.user;
 
   return (
-    <nav className="custom-scrollbar leftsidebar">
+    <nav className={`custom-scrollbar leftsidebar`}>
       <ul className="flex w-full flex-1 flex-col gap-6 px-6">
         {sidebarLinks.map((link) => {
           return (

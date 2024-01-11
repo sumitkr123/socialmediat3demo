@@ -91,133 +91,131 @@ const SignUp = ({
           switch (authkey) {
             case "credentials":
               return (
-                <div key={authkey}>
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="mt-10 flex flex-col justify-start gap-6"
+                <Form {...form} key={authkey}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="mt-10 flex flex-col justify-start gap-6"
+                  >
+                    <FormField
+                      required
+                      name="name"
+                      control={form.control}
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="flex w-full flex-col">
+                            <FormLabel className="text-base-semibold text-dark-1">
+                              Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="text"
+                                placeholder="Enter your name"
+                                className="input-focus"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    <FormField
+                      required
+                      name="email"
+                      control={form.control}
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="flex w-full flex-col">
+                            <FormLabel className="text-base-semibold text-dark-1">
+                              Email
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="email"
+                                placeholder="Enter your email"
+                                className="input-focus"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    <FormField
+                      required
+                      name="password"
+                      control={form.control}
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="flex w-full flex-col">
+                            <FormLabel className="text-base-semibold text-dark-1">
+                              Password
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="Enter your password"
+                                className="input-focus"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    <FormField
+                      required
+                      name="confirmPassword"
+                      control={form.control}
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="flex w-full flex-col">
+                            <FormLabel className="text-base-semibold text-dark-1">
+                              Confirm password
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="Confirm your password"
+                                className="input-focus"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    <Button
+                      disabled={signUpMutation.isLoading}
+                      type="submit"
+                      className="bg-primary text-white"
                     >
-                      <FormField
-                        required
-                        name="name"
-                        control={form.control}
-                        render={({ field }) => {
-                          return (
-                            <FormItem className="flex w-full flex-col">
-                              <FormLabel className="text-base-semibold text-dark-1">
-                                Name
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  placeholder="Enter your name"
-                                  className="input-focus"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
+                      Submit
+                    </Button>
 
-                      <FormField
-                        required
-                        name="email"
-                        control={form.control}
-                        render={({ field }) => {
-                          return (
-                            <FormItem className="flex w-full flex-col">
-                              <FormLabel className="text-base-semibold text-dark-1">
-                                Email
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="email"
-                                  placeholder="Enter your email"
-                                  className="input-focus"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
+                    <Link
+                      href={"/auth/sign-in"}
+                      replace
+                      className="text-md flex w-fit gap-2 text-slate-700 max-md:text-sm"
+                    >
+                      Already have an account?&nbsp;
+                      <p className="text-md text-primary">Sign in</p>
+                    </Link>
+                  </form>
 
-                      <FormField
-                        required
-                        name="password"
-                        control={form.control}
-                        render={({ field }) => {
-                          return (
-                            <FormItem className="flex w-full flex-col">
-                              <FormLabel className="text-base-semibold text-dark-1">
-                                Password
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="password"
-                                  placeholder="Enter your password"
-                                  className="input-focus"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-
-                      <FormField
-                        required
-                        name="confirmPassword"
-                        control={form.control}
-                        render={({ field }) => {
-                          return (
-                            <FormItem className="flex w-full flex-col">
-                              <FormLabel className="text-base-semibold text-dark-1">
-                                Confirm password
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="password"
-                                  placeholder="Confirm your password"
-                                  className="input-focus"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-
-                      <Button
-                        disabled={signUpMutation.isLoading}
-                        type="submit"
-                        className="bg-primary text-white"
-                      >
-                        Submit
-                      </Button>
-
-                      <Link
-                        href={"/auth/sign-in"}
-                        replace
-                        className="text-md flex w-fit gap-2 text-slate-700 max-md:text-sm"
-                      >
-                        Already have an account?&nbsp;
-                        <p className="text-md text-primary">Sign in</p>
-                      </Link>
-                    </form>
-
-                    <div className="my-4 flex flex-row items-center gap-2">
-                      <div className="flex h-[0.5px] w-full bg-dark-1" />
-                      <p className="text-md text-slate-700">OR</p>
-                      <div className="flex h-[0.5px] w-full bg-dark-1" />
-                    </div>
-                  </Form>
-                </div>
+                  <div className="my-4 flex flex-row items-center gap-2">
+                    <div className="flex h-[0.5px] w-full bg-dark-1" />
+                    <p className="text-md text-slate-700">OR</p>
+                    <div className="flex h-[0.5px] w-full bg-dark-1" />
+                  </div>
+                </Form>
               );
 
             case "discord":
@@ -247,7 +245,7 @@ const SignUp = ({
   };
 
   return (
-    <div className="no-scrollbar flex h-2/3 flex-col justify-between overflow-auto rounded-xl bg-white px-11 py-10">
+    <div className="no-scrollbar flex h-[32em] w-[360px] flex-col justify-between overflow-auto rounded-xl bg-white px-11 py-10">
       <div className="flex flex-col justify-start self-start">
         <p className="text-pretty text-xl text-dark-1">Sign up</p>
         <p className="text-sm text-slate-600">

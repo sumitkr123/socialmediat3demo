@@ -34,21 +34,76 @@ export const postRouter = createTRPCRouter({
         includeLikes: z.boolean(),
       }),
     )
-    .query(({ ctx, input }) => {
-      return ctx.db.post.findMany({
-        include: {
-          createdBy: input.includeAuthor === true,
-          comments: input.includecomments === true,
-          likes:
-            input.includeLikes === true
-              ? {
-                  select: {
-                    userId: true,
-                  },
-                }
-              : false,
-        },
-      });
+    .query(async ({ ctx, input }) => {
+      try {
+        const result = await ctx.db.post.findMany({
+          include: {
+            createdBy: input.includeAuthor === true,
+            comments: input.includecomments === true,
+            likes:
+              input.includeLikes === true
+                ? {
+                    select: {
+                      userId: true,
+                      user: true,
+                    },
+                  }
+                : false,
+          },
+        });
+
+        return result;
+      } catch (e) {
+        throw e;
+      }
+    }),
+
+  getInfinitePosts: protectedProcedure
+    .input(
+      z.object({
+        includeAuthor: z.boolean(),
+        includecomments: z.boolean(),
+        includeLikes: z.boolean(),
+        limit: z.number().min(1).max(100),
+        cursor: z.number().nullish(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const result = await ctx.db.post.findMany({
+          take: input.limit + 1,
+          cursor: input.cursor ? { id: input.cursor } : undefined,
+          orderBy: {
+            id: "asc",
+          },
+          include: {
+            createdBy: input.includeAuthor === true,
+            comments: input.includecomments === true,
+            likes:
+              input.includeLikes === true
+                ? {
+                    select: {
+                      userId: true,
+                      user: true,
+                    },
+                  }
+                : false,
+          },
+        });
+
+        let nextCursor: typeof input.cursor | undefined = undefined;
+
+        if (result.length > input.limit) {
+          const nextItem = result.pop();
+          nextCursor = nextItem!.id;
+        }
+        return {
+          result,
+          nextCursor,
+        };
+      } catch (e) {
+        throw e;
+      }
     }),
 
   addLikeToPost: protectedProcedure

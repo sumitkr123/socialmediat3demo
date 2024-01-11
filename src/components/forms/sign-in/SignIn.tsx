@@ -83,81 +83,79 @@ const SignIn = ({
           switch (authkey) {
             case "credentials":
               return (
-                <div key={authkey}>
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="mt-10 flex flex-col justify-start gap-6"
+                <Form {...form} key={authkey}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="mt-10 flex flex-col justify-start gap-6"
+                  >
+                    <FormField
+                      required
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="flex w-full flex-col">
+                          <FormLabel className="text-base-semibold text-dark-1">
+                            Email
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="Enter your email"
+                              className="input-focus"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      required
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem className="flex w-full flex-col">
+                          <FormLabel className="text-base-semibold text-dark-1">
+                            Password
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="Enter your password"
+                              className="input-focus"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      disabled={isSubmitting}
+                      type="submit"
+                      className="bg-primary text-white"
                     >
-                      <FormField
-                        required
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem className="flex w-full flex-col">
-                            <FormLabel className="text-base-semibold text-dark-1">
-                              Email
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="input-focus"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      Submit
+                    </Button>
+                  </form>
 
-                      <FormField
-                        required
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem className="flex w-full flex-col">
-                            <FormLabel className="text-base-semibold text-dark-1">
-                              Password
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="password"
-                                placeholder="Enter your password"
-                                className="input-focus"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                  <Link
+                    replace
+                    href={"/auth/sign-up"}
+                    className="text-md mt-5 flex w-fit gap-2 text-slate-700"
+                  >
+                    No account?&nbsp;
+                    <p className="text-md text-primary">Sign up</p>
+                  </Link>
 
-                      <Button
-                        disabled={isSubmitting}
-                        type="submit"
-                        className="bg-primary text-white"
-                      >
-                        Submit
-                      </Button>
-                    </form>
-
-                    <Link
-                      replace
-                      href={"/auth/sign-up"}
-                      className="text-md mt-5 flex w-fit gap-2 text-slate-700"
-                    >
-                      No account?&nbsp;
-                      <p className="text-md text-primary">Sign up</p>
-                    </Link>
-
-                    <div className="my-4 flex flex-row items-center gap-2">
-                      <div className="flex h-[0.5px] w-full bg-dark-1" />
-                      <p className="text-md text-slate-700">OR</p>
-                      <div className="flex h-[0.5px] w-full bg-dark-1" />
-                    </div>
-                  </Form>
-                </div>
+                  <div className="my-4 flex flex-row items-center gap-2">
+                    <div className="flex h-[0.5px] w-full bg-dark-1" />
+                    <p className="text-md text-slate-700">OR</p>
+                    <div className="flex h-[0.5px] w-full bg-dark-1" />
+                  </div>
+                </Form>
               );
 
             case "discord":
@@ -187,7 +185,7 @@ const SignIn = ({
   };
 
   return (
-    <div className="no-scrollbar flex h-2/3 flex-col justify-between overflow-auto rounded-xl bg-white px-11 py-10">
+    <div className="no-scrollbar flex h-[32em] w-[360px] flex-col justify-between overflow-auto rounded-xl bg-white px-11 py-10">
       <div className="flex flex-col justify-start self-start">
         <p className="text-pretty text-xl text-dark-1">Sign in</p>
         <p className="text-sm text-slate-600">

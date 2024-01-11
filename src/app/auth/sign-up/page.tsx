@@ -13,7 +13,7 @@ const RegisterPage = async () => {
   const providers = await getProviders();
 
   return (
-    <div className="fixed flex h-screen flex-1 flex-col items-center justify-center self-center">
+    <div className="flex h-screen flex-1 flex-col items-center justify-center self-center">
       <SignUp providers={providers} />
     </div>
   );

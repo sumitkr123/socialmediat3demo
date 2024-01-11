@@ -3,7 +3,11 @@ import { z } from "zod";
 import { hash } from "bcryptjs";
 
 import { throwPrismaErrors } from "@/lib/helper";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
   create: publicProcedure
@@ -37,6 +41,26 @@ export const userRouter = createTRPCRouter({
       } catch (e) {
         throwPrismaErrors(e, input);
 
+        throw e;
+      }
+    }),
+
+  getUserById: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const result = await ctx.db.user.findFirst({
+          where: {
+            id: input.userId,
+          },
+        });
+
+        return result;
+      } catch (e) {
         throw e;
       }
     }),
