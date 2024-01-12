@@ -26,8 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} custom-scrollbar`}>
-        <Providers>
-          <main className="flex flex-row">
+        <main className="flex flex-row">
+          <Providers>
             <SignedIn>
               <LeftSideBar />
               <section className="main-container max-md:p-0">
@@ -39,8 +39,8 @@ export default function RootLayout({
               <section className="main-container">{children}</section>
             </SignedOut>
             <Toaster />
-          </main>
-        </Providers>
+          </Providers>
+        </main>
       </body>
     </html>
   );

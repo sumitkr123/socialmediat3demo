@@ -12,9 +12,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { RegistrationValidationSchema } from "@/lib/validations/RegistrationValidationSchema";
 import { api } from "@/trpc/client";
+import { SignUpProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BuiltInProviderType } from "next-auth/providers/index";
-import { ClientSafeProvider, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,14 +24,7 @@ import { LiteralUnion, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-const SignUp = ({
-  providers,
-}: {
-  providers: Record<
-    LiteralUnion<BuiltInProviderType, string>,
-    ClientSafeProvider
-  > | null;
-}): React.ReactNode => {
+const SignUp = ({ providers }: SignUpProps): React.ReactNode => {
   const form = useForm<z.infer<typeof RegistrationValidationSchema>>({
     resolver: zodResolver(RegistrationValidationSchema),
     defaultValues: {

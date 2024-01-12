@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { LoginValidationSchema } from "@/lib/validations/LoginValidationSchema";
+import { SignInProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BuiltInProviderType } from "next-auth/providers/index";
-import { ClientSafeProvider, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,14 +24,7 @@ import { LiteralUnion, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-const SignIn = ({
-  providers,
-}: {
-  providers: Record<
-    LiteralUnion<BuiltInProviderType, string>,
-    ClientSafeProvider
-  > | null;
-}): React.ReactNode => {
+const SignIn = ({ providers }: SignInProps): React.ReactNode => {
   const form = useForm<z.infer<typeof LoginValidationSchema>>({
     resolver: zodResolver(LoginValidationSchema),
     defaultValues: {

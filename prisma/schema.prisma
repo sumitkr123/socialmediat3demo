@@ -27,18 +27,20 @@ model Like {
 }
 
 model Post {
-    id               Int      @id @default(autoincrement())
-    content          String
-    createdAt        DateTime @default(now())
-    updatedAt        DateTime @updatedAt
-    createdBy        User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
-    createdById      String
-    comments         Post[]   @relation("PostComments")
-    commentsRelation Post[]   @relation("PostComments")
-    likes            Like[]
+    id           Int      @id @default(autoincrement())
+    content      String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdById  String
+    likes        Like[]
+    comments     Post[]   @relation(name: "Comments")
+    parentPost   Post?    @relation(name: "Comments", fields: [parentPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    parentPostId Int?
 
     @@index([createdById])
     @@index([id])
+    @@index([parentPostId])
 }
 
 // Necessary for Next auth

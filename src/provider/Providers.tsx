@@ -14,13 +14,13 @@ export default function Providers({ children }: { children: ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <NextAuthProvider>
-        <CustomAuthProvider>
+      <TooltipProvider>
+        <NextAuthProvider>
           <TRPCReactProvider cookies={cookies().toString()}>
-            <TooltipProvider>{children}</TooltipProvider>
+            <CustomAuthProvider>{children}</CustomAuthProvider>
           </TRPCReactProvider>
-        </CustomAuthProvider>
-      </NextAuthProvider>
+        </NextAuthProvider>
+      </TooltipProvider>
     </ThemeProvider>
   );
 }

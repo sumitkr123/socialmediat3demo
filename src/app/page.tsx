@@ -3,7 +3,7 @@ import { type NextPage } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
-const PostFeed = dynamic(() => import("@/components/posts/PostFeed"));
+const PostFeed = dynamic(() => import("@/components/features/posts"));
 
 const Home: NextPage = async () => {
   const session = await getServerAuthSession();

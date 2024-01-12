@@ -1,6 +1,7 @@
 import { api } from "@/trpc/server";
+import { ProfilePageParams } from "@/types";
 
-const Profile = async ({ params }: { params: { id: string } }) => {
+const Profile = async ({ params }: ProfilePageParams) => {
   const profileData = await api.user.getUserById.query({
     userId: params.id,
   });

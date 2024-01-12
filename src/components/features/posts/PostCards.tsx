@@ -1,18 +1,15 @@
 "use client";
 
 import { api } from "@/trpc/client";
+import { PostCardProps } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { ScrollArea } from "../ui/scroll-area";
-
-type PostCardProps = {
-  [key: string]: any;
-};
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { ScrollArea } from "../../ui/scroll-area";
 
 const PostCards = ({
   id,
@@ -35,15 +32,29 @@ const PostCards = ({
     setLikers(likes);
   }, [isPostLiked, likes]);
 
+  const infinitePostsQueryKey = useMemo(() => {
+    return getQueryKey(api.post.getInfinitePosts);
+  }, [getQueryKey]);
+
   const allPostsQueryKey = useMemo(() => {
     return getQueryKey(api.post.getAllPosts);
+  }, [getQueryKey]);
+
+  const postByIdQueryKey = useMemo(() => {
+    return getQueryKey(api.post.getPostById);
   }, [getQueryKey]);
 
   const addLikeToPost = api.post.addLikeToPost.useMutation({
     onSuccess: (data) => {
       if (data) {
         queryclient.invalidateQueries({
-          queryKey: [allPostsQueryKey[0]],
+          queryKey: infinitePostsQueryKey,
+        });
+        queryclient.invalidateQueries({
+          queryKey: postByIdQueryKey,
+        });
+        queryclient.invalidateQueries({
+          queryKey: allPostsQueryKey,
         });
       }
     },
@@ -57,7 +68,13 @@ const PostCards = ({
     onSuccess: (data) => {
       if (data) {
         queryclient.invalidateQueries({
-          queryKey: [allPostsQueryKey[0]],
+          queryKey: infinitePostsQueryKey,
+        });
+        queryclient.invalidateQueries({
+          queryKey: postByIdQueryKey,
+        });
+        queryclient.invalidateQueries({
+          queryKey: allPostsQueryKey,
         });
       }
     },
@@ -135,7 +152,7 @@ const PostCards = ({
             <div className="flex flex-col items-center">
               <Link
                 href={`/profile/${newAuthor.id}`}
-                className="relative h-11 w-11 overflow-hidden rounded-full bg-slate-500"
+                className="relative overflow-hidden rounded-full bg-slate-500"
               >
                 <Image
                   priority={true}
@@ -145,7 +162,8 @@ const PostCards = ({
                       : "/assets/user.svg"
                   }
                   alt="Profile Photo"
-                  fill
+                  width={44}
+                  height={44}
                   className="cursor-pointer"
                 />
               </Link>
@@ -154,10 +172,10 @@ const PostCards = ({
             </div>
 
             <div className="flex w-full flex-col">
-              <Link href={`/profile/${newAuthor.id}`}>
-                <h4 className="cursor-pointer font-bold text-slate-400">
+              <Link href={`/profile/${newAuthor.id}`} className="w-fit">
+                <p className="cursor-pointer font-bold text-slate-400">
                   {newAuthor.name}
-                </h4>
+                </p>
               </Link>
 
               <p className="mt-5 whitespace-pre-line text-light-2">{content}</p>
@@ -191,8 +209,8 @@ const PostCards = ({
                       className="cursor-pointer resize-none object-contain"
                     />
                     {!isComment && newComments.length > 0 && (
-                      <div className="absolute ml-[13px] mt-[-4px] flex h-[16px] w-[16px] flex-1 items-center justify-center rounded-full bg-red-600">
-                        <span className="text-subtle-medium text-light-1">
+                      <div className="absolute ml-[13px] mt-[-32px] flex h-[12px] w-[12px] flex-1 items-center justify-center rounded-full bg-red-600 p-2">
+                        <span className="text-subtle-medium text-xs text-light-1">
                           {newComments.length >= 10
                             ? newComments.length.toString() + "+"
                             : newComments.length}
@@ -242,6 +260,7 @@ const PostCards = ({
               likers.map((like: any) => {
                 return (
                   <Link
+                    key={like.userId}
                     href={`/profile/${like.userId}`}
                     className="my-3 flex min-w-fit flex-col px-4 hover:scale-110"
                   >
@@ -250,7 +269,7 @@ const PostCards = ({
                         <Image
                           priority={true}
                           src={
-                            like.user.image !== null && like.user.image
+                            like?.user?.image !== null && like?.user?.image
                               ? like.user.image
                               : "/assets/user.svg"
                           }

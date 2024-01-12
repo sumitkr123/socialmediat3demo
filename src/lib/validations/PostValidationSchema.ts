@@ -5,8 +5,8 @@ export const PostValidationSchema = z.object({
 });
 
 export const CommentValidationSchema = z.object({
-  thread: z
+  comment: z
     .string()
-    .min(1, { message: "**Thread name is required." })
+    .min(1, { message: "**Comment is required." })
     .min(3, { message: "**Minimum 3 characters." }),
 });

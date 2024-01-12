@@ -1,23 +1,16 @@
 "use client";
 
 import { api } from "@/trpc/client";
-import { User } from "next-auth";
+import { PostFeedProps } from "@/types";
 import { useMemo } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PacmanLoader from "react-spinners/PacmanLoader";
-import PostCards from "../cards/PostCards";
-
-type PostFeedProps = {
-  user: User | null;
-};
+import PostCards from "./PostCards";
 
 const PostFeed = ({ user }: PostFeedProps) => {
   const { data, isLoading, fetchNextPage, hasNextPage } =
     api.post.getInfinitePosts.useInfiniteQuery(
       {
-        includeAuthor: true,
-        includecomments: true,
-        includeLikes: true,
         limit: 5,
       },
       {
@@ -34,7 +27,7 @@ const PostFeed = ({ user }: PostFeedProps) => {
       });
     }
     return [];
-  }, [data?.pages.length]);
+  }, [data]);
 
   return (
     <div className="no-scrollbar flex flex-col max-md:px-10">
@@ -49,7 +42,7 @@ const PostFeed = ({ user }: PostFeedProps) => {
           aria-label="Loading Spinner"
           data-testid="loader"
         />
-      ) : posts ? (
+      ) : posts.length > 0 ? (
         <InfiniteScroll
           dataLength={posts?.length}
           className="no-scrollbar flex flex-col gap-8"
@@ -68,7 +61,7 @@ const PostFeed = ({ user }: PostFeedProps) => {
           }
           next={fetchNextPage}
         >
-          {posts?.map((post) => {
+          {posts?.map((post, index) => {
             return (
               <PostCards
                 key={post.id}
@@ -89,7 +82,7 @@ const PostFeed = ({ user }: PostFeedProps) => {
           })}
         </InfiniteScroll>
       ) : (
-        <h1>No Posts found..!</h1>
+        <h1 className="text-head text-light-1">No Posts found..!</h1>
       )}
     </div>
   );

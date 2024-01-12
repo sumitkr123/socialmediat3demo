@@ -2,8 +2,8 @@
 
 import { sidebarLinks } from "@/utils";
 import Image from "next/image";
-import { NavLink } from "../features/NavLink";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { NavLink } from "./NavLink";
 
 const BottomBar = () => {
   return (
@@ -11,10 +11,9 @@ const BottomBar = () => {
       <div className="bottombar_container">
         {sidebarLinks.map((link) => {
           return (
-            <Tooltip>
+            <Tooltip key={link.label}>
               <TooltipTrigger>
                 <NavLink
-                  key={link.label}
                   to={link.route}
                   className={({ isActive }) => {
                     return `bottombar_link ${

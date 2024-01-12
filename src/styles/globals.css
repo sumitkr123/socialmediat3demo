@@ -198,6 +198,15 @@
   }
 }
 
+/* Comment Form */
+.comment-form {
+  @apply mt-10 flex flex-col gap-4 !important;
+}
+
+.comment-form_btn {
+  @apply rounded-3xl bg-primary-500 px-8 py-2 text-light-1 max-xs:w-full !important;
+}
+
 /* Shadcn Component Styles */
 
 /* Tab */

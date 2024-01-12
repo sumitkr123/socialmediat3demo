@@ -13,14 +13,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { PostValidationSchema } from "@/lib/validations/PostValidationSchema";
 import { api } from "@/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
 const PostForm = () => {
-  const router = useRouter();
-
   const form = useForm<z.infer<typeof PostValidationSchema>>({
     resolver: zodResolver(PostValidationSchema),
     defaultValues: {
@@ -31,7 +28,7 @@ const PostForm = () => {
   const postForm = api.post.create.useMutation({
     onSuccess: (data) => {
       if (data) {
-        router.push("/");
+        form.reset();
       }
     },
     onError: (error) => {
